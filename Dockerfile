@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ros-jazzy-tf2-tools ros-jazzy-rqt-tf-tree \
       ros-jazzy-ros-gz ros-jazzy-xacro \
       ros-jazzy-robot-state-publisher ros-jazzy-joint-state-publisher-gui \
+      ros-jazzy-ros2-control \
+      ros-jazzy-ros2-controllers \
+      ros-jazzy-gz-ros2-control \
+      ros-jazzy-controller-manager \
     && rm -rf /var/lib/apt/lists/*
 
 ARG LIVOX_SDK2_TAG=v1.3.1
