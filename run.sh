@@ -1,5 +1,4 @@
 #!/bin/bash
-# Persistent, named container for the A2-W / head360 nav stack.
 #
 # First run creates the container; later runs reuse it and open a new shell.
 #   bash run.sh                                   # laptop: container "a2w_nav_dev", Cyclone on lo
@@ -15,6 +14,12 @@ mkdir -p "$WS/src"
 
 # Allow GUI (rviz2) from the container; harmless on a headless robot.
 if [ -n "$DISPLAY" ]; then xhost +local:docker > /dev/null 2>&1; fi
+
+# Only request GPU passthrough if an NVIDIA GPU is actually present
+GPU_FLAGS=""
+if command -v nvidia-smi > /dev/null 2>&1; then
+  GPU_FLAGS="--runtime=nvidia --gpus all"
+fi
 
 # Reuse the container if it already exists
 if docker container inspect "$NAME" > /dev/null 2>&1; then
@@ -32,7 +37,7 @@ docker run -d \
   -e XDG_RUNTIME_DIR=/tmp/runtime-root \
   -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
   --device /dev/dri:/dev/dri --group-add video \
-  --runtime=nvidia --gpus all \
+  $GPU_FLAGS \
   -v "$WS":/ws \
   "$IMAGE" sleep infinity > /dev/null
 

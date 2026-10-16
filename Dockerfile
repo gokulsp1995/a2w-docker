@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ros-jazzy-rmw-cyclonedds-cpp \
       ros-jazzy-rosidl-generator-dds-idl \
       libyaml-cpp-dev git python3-colcon-common-extensions \
+      ros-jazzy-laser-filters \
       ros-jazzy-navigation2 ros-jazzy-nav2-bringup \
       ros-jazzy-slam-toolbox ros-jazzy-pointcloud-to-laserscan \
       ros-jazzy-tf2-tools ros-jazzy-rqt-tf-tree \
@@ -18,6 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ros-jazzy-ros2-controllers \
       ros-jazzy-gz-ros2-control \
       ros-jazzy-controller-manager \
+      ros-jazzy-teleop-twist-keyboard \
+      can-utils \
+      net-tools \
+      iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 ARG LIVOX_SDK2_TAG=v1.3.1
@@ -27,6 +32,21 @@ RUN git clone -q --depth 1 --branch ${LIVOX_SDK2_TAG} https://github.com/Livox-S
  && cmake --install /tmp/Livox-SDK2/build \
  && ldconfig \
  && rm -rf /tmp/Livox-SDK2
+
+ # ============ livox_ros_driver2 (ROS 2 node, needs the SDK above) ============
+# Must be cloned into <ws>/src/livox_ros_driver2 — the repo's own build
+# tooling depends on that exact layout, per its README.
+ARG LIVOX_ROS_DRIVER2_TAG=master
+RUN mkdir -p /opt/ws_livox/src \
+ && git clone -q --depth 1 --branch ${LIVOX_ROS_DRIVER2_TAG} \
+      https://github.com/Livox-SDK/livox_ros_driver2 \
+      /opt/ws_livox/src/livox_ros_driver2 \
+ && cd /opt/ws_livox/src/livox_ros_driver2 \
+ && source /opt/ros/jazzy/setup.bash \
+ && ./build.sh jazzy \
+ && rm -rf /opt/ws_livox/src/livox_ros_driver2/build \
+            /opt/ws_livox/src/livox_ros_driver2/.aux
+            
 
 ARG UNITREE_ROS2_COMMIT=668d1ec5a05d1c38d3306bdca7d59f2ba3581a88
 RUN mkdir -p /opt/unitree_ros2 && cd /opt/unitree_ros2 \
