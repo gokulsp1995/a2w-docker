@@ -2,6 +2,7 @@
 # Sourced by the entrypoint and by every interactive shell (docker exec).
 source /opt/ros/jazzy/setup.bash
 source /opt/unitree_ros2/cyclonedds_ws/install/setup.bash
+if [ -f /opt/ws_livox/install/setup.bash ]; then source /opt/ws_livox/install/setup.bash; fi
 if [ -f /ws/install/setup.bash ]; then source /ws/install/setup.bash; fi
 
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
